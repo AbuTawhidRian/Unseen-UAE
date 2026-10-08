@@ -105,9 +105,8 @@ export default function CardGeneratorPanel() {
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.5);
-  const [labelMode, setLabelMode] = useState<'regions' | 'emirates' | 'both' | 'none'>('regions');
-  const showRegionLabels = labelMode === 'regions' || labelMode === 'both';
-  const showEmirateLabels = labelMode === 'emirates' || labelMode === 'both';
+  const [labelMode, setLabelMode] = useState<'regions' | 'emirates' | 'both'>('regions');
+  const [onlySelected, setOnlySelected] = useState(true);
 
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
@@ -300,36 +299,41 @@ export default function CardGeneratorPanel() {
         </div>
 
         {/* Map Label Selector */}
-        <div className="flex items-center gap-1.5 bg-gray-100/90 p-1 rounded-xl text-xs font-semibold">
-          <span className="px-2 text-gray-500 font-medium hidden sm:inline">Labels:</span>
-          <button
-            type="button"
-            onClick={() => setLabelMode('regions')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'regions' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
-          >
-            Regions (20)
-          </button>
-          <button
-            type="button"
-            onClick={() => setLabelMode('emirates')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'emirates' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
-          >
-            Emirates (7)
-          </button>
-          <button
-            type="button"
-            onClick={() => setLabelMode('both')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'both' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
-          >
-            Both
-          </button>
-          <button
-            type="button"
-            onClick={() => setLabelMode('none')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'none' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
-          >
-            Clean Map
-          </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1 bg-gray-100/90 p-1 rounded-xl text-xs font-semibold">
+            <span className="px-2 text-gray-500 font-medium hidden sm:inline">Show:</span>
+            <button
+              type="button"
+              onClick={() => setLabelMode('regions')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'regions' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
+            >
+              Regions
+            </button>
+            <button
+              type="button"
+              onClick={() => setLabelMode('emirates')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'emirates' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
+            >
+              Emirates
+            </button>
+            <button
+              type="button"
+              onClick={() => setLabelMode('both')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'both' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
+            >
+              Both
+            </button>
+          </div>
+
+          <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-xl border border-gray-200 transition-colors">
+            <input
+              type="checkbox"
+              checked={onlySelected}
+              onChange={e => setOnlySelected(e.target.checked)}
+              className="w-4 h-4 accent-emerald-600 rounded"
+            />
+            <span>After Selection Only</span>
+          </label>
         </div>
       </div>
 
@@ -418,8 +422,8 @@ export default function CardGeneratorPanel() {
                     <path
                       key={emirate.id}
                       d={emirate.path}
-                      fill={isSelected ? themeColor : '#2b78bc'}
-                      fillOpacity={isSelected ? (0.75 + fillRatio * 0.25) : 0.82}
+                      fill={isSelected ? themeColor : '#cbdceb'}
+                      fillOpacity={isSelected ? (0.75 + fillRatio * 0.25) : 0.55}
                       stroke="#ffffff"
                       strokeWidth={2.5}
                       strokeLinejoin="round"
@@ -439,9 +443,13 @@ export default function CardGeneratorPanel() {
                 })}
 
                 {/* 2. Emirate Badges (7 main emirates) */}
-                {showEmirateLabels && Object.entries(EMIRATE_LABELS).map(([id, label]) => {
+                {(labelMode === 'emirates' || labelMode === 'both') && Object.entries(EMIRATE_LABELS).map(([id, label]) => {
                   const emirateData = EMIRATES_DATA.find(e => e.id === id);
                   const isSelected = emirateData ? emirateData.regions.some(r => selectedRegions.includes(r.id)) : false;
+
+                  // Only show after selection if onlySelected is enabled
+                  if (onlySelected && !isSelected) return null;
+
                   return (
                     <g key={`emirate-badge-${id}`} style={{ pointerEvents: 'none' }}>
                       {/* Connector line for offset labels */}
@@ -465,7 +473,7 @@ export default function CardGeneratorPanel() {
                         fill={isSelected ? themeColor : '#ffffff'}
                         fillOpacity={isSelected ? 0.95 : 0.92}
                         stroke="#ffffff"
-                        strokeWidth="1.5"
+                        strokeWidth={1.5}
                       />
                       {/* Label text */}
                       <text
@@ -485,8 +493,11 @@ export default function CardGeneratorPanel() {
                 })}
 
                 {/* 3. Region Markers & Names (All 20 regions - styled like Bangladesh reference map) */}
-                {showRegionLabels && REGION_MARKERS.map((r) => {
+                {(labelMode === 'regions' || labelMode === 'both') && REGION_MARKERS.map((r) => {
                   const isRegionSelected = selectedRegions.includes(r.id);
+
+                  // Only show after selection if onlySelected is enabled
+                  if (onlySelected && !isRegionSelected) return null;
 
                   return (
                     <g
