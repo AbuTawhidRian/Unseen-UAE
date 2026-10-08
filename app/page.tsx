@@ -1,120 +1,204 @@
 'use client';
 
-import RegionSelectorPanel from '@/components/map/RegionSelectorPanel';
+import React, { useState } from 'react';
+import RegionSelectorPanel, { EMIRATES_DATA } from '@/components/map/RegionSelectorPanel';
 import CardGeneratorPanel from '@/components/map/CardGeneratorPanel';
-import { Compass } from 'lucide-react';
+import { Compass, Sparkles, MapPin, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useMapStore } from '@/store/useMapStore';
 
 export default function Home() {
+  const { selectedRegions, selectedSpots = [] } = useMapStore();
+  const [mobileTab, setMobileTab] = useState<'card' | 'regions'>('card');
+
+  // Count visited emirates
+  const visitedEmirates = EMIRATES_DATA.filter(e =>
+    e.regions.some(r => selectedRegions.includes(r.id))
+  ).length;
+
   return (
-    <div className="min-h-screen bg-[#f9fafb]">
-      {/* Header */}
+    <div className="min-h-screen bg-[#fafbfc] text-gray-900 selection:bg-emerald-500 selection:text-white">
+      {/* Minimalist Glass Header */}
       <motion.header 
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="bg-white border-b border-gray-100 py-4 px-6 md:px-12 flex items-center justify-between sticky top-0 z-50"
+        initial={{ y: -60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-black/[0.05] transition-all"
       >
-        <div className="flex items-center gap-2">
-          <Compass className="w-8 h-8 text-emerald-600" />
-          <span className="text-xl font-black tracking-tight">Unseen UAE</span>
-        </div>
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-emerald-600 transition-colors">My Map</Link>
-          <Link href="/explore" className="hover:text-emerald-600 transition-colors">Travel Spots</Link>
-          <Link href="/explore" className="hover:text-emerald-600 transition-colors">Emirate Profiles</Link>
-          <Link href="/explore" className="hover:text-emerald-600 transition-colors">Top Travelers</Link>
-          <Link href="/explore" className="hover:text-emerald-600 transition-colors">Hidden Gems</Link>
-        </nav>
-        <div className="flex items-center gap-4">
-          <button className="text-sm font-medium bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-full transition-colors">
-            English
-          </button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 h-16 flex items-center justify-between">
+          {/* Logo & Emblem */}
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-sm shadow-emerald-600/20 group-hover:scale-105 transition-transform">
+              <Compass className="w-5 h-5" />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-base tracking-tight text-gray-900">Unseen UAE</span>
+                <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100/80">
+                  🇦🇪 Map
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Navigation Links (Desktop) */}
+          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold tracking-wide uppercase text-gray-500">
+            <Link href="/" className="text-emerald-700 font-bold transition-colors">Explorer</Link>
+            <Link href="/explore" className="hover:text-gray-900 transition-colors">Hidden Gems</Link>
+          </nav>
+
+          {/* Right Header Status Pill */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100/80 border border-gray-200/60 text-xs font-semibold text-gray-700">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>{visitedEmirates}/7 Emirates</span>
+              <span className="text-gray-400">&middot;</span>
+              <span className="text-gray-500 font-medium">{selectedRegions.length}/20 Regions</span>
+              {selectedSpots.length > 0 && (
+                <>
+                  <span className="text-gray-400">&middot;</span>
+                  <span className="text-amber-700 font-bold">{selectedSpots.length} Spots</span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </motion.header>
 
-      {/* Hero Section */}
-      <section className="relative w-full h-[50vh] min-h-[400px] flex items-center justify-center bg-gray-900 overflow-hidden">
-        {/* Placeholder for nature background image */}
-        <motion.div 
-          initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.4 }}
-          transition={{ duration: 1.5 }}
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1546412414-e1885259563a?q=80&w=2000&auto=format&fit=crop")' }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-80" />
-        
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center">
-          <motion.span 
-            initial={{ opacity: 0, y: 20 }}
+      {/* Hero Section (Minimalist & Editorial) */}
+      <section className="relative w-full pt-12 pb-14 md:pt-16 md:pb-20 overflow-hidden bg-gradient-to-b from-white via-[#f7f9fa] to-[#fafbfc] border-b border-gray-100">
+        {/* Soft background ambient gradient accents */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[360px] bg-gradient-to-b from-emerald-50/50 via-teal-50/30 to-transparent blur-3xl pointer-events-none -z-10" />
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center">
+          {/* Tag */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-emerald-400 font-semibold mb-4 tracking-widest text-sm uppercase"
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100/90 text-emerald-700 text-xs font-bold tracking-wide uppercase mb-5"
           >
-            Explore the 7 Emirates
-          </motion.span>
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Interactive UAE Travel Map & Card</span>
+          </motion.div>
+
+          {/* Headline */}
           <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-[1.15] mb-4"
           >
             How much of the UAE have you explored?
           </motion.h1>
+
+          {/* Subtitle */}
           <motion.p 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-gray-500 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-6 font-normal"
           >
-            From the deep dunes of Al Dhafra to the rocky mountains of Hatta. Track your journey and share your explorer card.
+            From the silent dunes of Al Dhafra to the dramatic ridges of Jebel Jais. Check off every region you’ve visited and export your personalized explorer card.
           </motion.p>
-          <motion.button 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => window.scrollTo({ top: 500, behavior: 'smooth' })}
-            className="bg-white text-gray-900 px-8 py-4 rounded-full font-bold text-lg shadow-xl"
+
+          {/* Stats Bar */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex items-center justify-center flex-wrap gap-4 sm:gap-8 text-xs font-semibold text-gray-600"
           >
-            Start Selecting Regions ↓
-          </motion.button>
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-gray-900">7</span> Emirates
+            </div>
+            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-gray-900">20</span> Iconic Regions
+            </div>
+            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-amber-600">32+</span> Tourist Places
+            </div>
+            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-emerald-600">Free</span> High-Res Export
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Main App Workspace (Split View) */}
-      <main className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8 items-start">
-        {/* Left Panel: Selector */}
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6 }}
-          className="w-full lg:w-1/4 shrink-0 lg:sticky lg:top-24 max-h-[calc(100vh-8rem)] overflow-y-auto hidden-scrollbar"
-        >
-          <RegionSelectorPanel />
-        </motion.div>
+      {/* Main App Workspace */}
+      <main id="workspace" className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12">
+        {/* Mobile View Switcher (Only visible on screens < lg) */}
+        <div className="lg:hidden mb-6 flex justify-center sticky top-20 z-40">
+          <div className="bg-white/95 backdrop-blur-md p-1 rounded-2xl shadow-md border border-gray-200/80 flex gap-1 w-full max-w-md">
+            <button
+              type="button"
+              onClick={() => setMobileTab('card')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                mobileTab === 'card'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Compass className="w-4 h-4" />
+              <span>Explorer Card ({visitedEmirates}/7)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab('regions')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                mobileTab === 'regions'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <MapPin className="w-4 h-4" />
+              <span>Places & Spots ({selectedRegions.length + selectedSpots.length})</span>
+            </button>
+          </div>
+        </div>
 
-        {/* Right Panel: Map Preview & Generator */}
-        <motion.div 
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.7 }}
-          className="w-full lg:w-3/4"
-        >
-          <CardGeneratorPanel />
-        </motion.div>
+        {/* Workspace Columns */}
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Left Panel: Region Selector */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className={`w-full lg:w-[340px] xl:w-[380px] shrink-0 lg:sticky lg:top-24 max-h-[calc(100vh-7rem)] overflow-y-auto hidden-scrollbar ${
+              mobileTab === 'regions' ? 'block' : 'hidden lg:block'
+            }`}
+          >
+            <RegionSelectorPanel />
+          </motion.div>
+
+          {/* Right Panel: Map Preview & Customizer */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className={`w-full flex-1 ${
+              mobileTab === 'card' ? 'block' : 'hidden lg:block'
+            }`}
+          >
+            <CardGeneratorPanel />
+          </motion.div>
+        </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#f0fdf4] mt-24 py-12 px-6 md:px-12 border-t border-emerald-100">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
-            <Compass className="w-6 h-6 text-emerald-600" />
-            <span className="font-bold text-gray-700">Unseen UAE</span>
+      {/* Minimalist Footer */}
+      <footer className="mt-20 border-t border-gray-200/60 bg-white/60 py-10 px-4 sm:px-6 md:px-10">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-medium text-gray-500">
+          <div className="flex items-center gap-2">
+            <Compass className="w-4 h-4 text-emerald-600" />
+            <span className="font-bold text-gray-800">Unseen UAE</span>
+            <span>&middot;</span>
+            <span>Discover every corner of the Emirates</span>
           </div>
-          <p className="text-sm text-gray-500 font-medium">Made by AI Architecture</p>
+          <p>© 2026 Unseen UAE. Free & Open Explorer Card.</p>
         </div>
       </footer>
     </div>

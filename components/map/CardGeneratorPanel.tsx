@@ -6,6 +6,7 @@ import * as htmlToImage from 'html-to-image';
 import { saveAs } from 'file-saver';
 import { Download, Upload, Palette, Share2, X, Copy, Check } from 'lucide-react';
 import { EMIRATES_DATA } from './RegionSelectorPanel';
+import { TOURIST_SPOTS, TOTAL_TOURIST_SPOTS } from '@/data/touristSpots';
 import { motion } from 'framer-motion';
 
 // UAE Flag colors as themes
@@ -101,11 +102,23 @@ const EMIRATE_PATHS = [
 ];
 
 export default function CardGeneratorPanel() {
-  const { selectedRegions, toggleRegion, themeColor, setThemeColor, userName, setUserName, userPhoto, setUserPhoto } = useMapStore();
+  const { 
+    selectedRegions, 
+    selectedSpots = [], 
+    toggleRegion, 
+    toggleSpot, 
+    labelMode, 
+    setLabelMode, 
+    themeColor, 
+    setThemeColor, 
+    userName, 
+    setUserName, 
+    userPhoto, 
+    setUserPhoto 
+  } = useMapStore();
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.5);
-  const [labelMode, setLabelMode] = useState<'regions' | 'emirates' | 'both'>('regions');
   const [onlySelected, setOnlySelected] = useState(true);
 
   useEffect(() => {
@@ -253,91 +266,111 @@ export default function CardGeneratorPanel() {
       className="space-y-6"
     >
       {/* Controls Toolbar */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap items-center gap-6">
-
-        {/* Theme Picker */}
-        <div className="flex items-center gap-3 border-r pr-6 border-gray-100">
-          <Palette className="w-5 h-5 text-gray-400" />
-          <div className="flex gap-2 items-center">
-            {THEMES.map(color => (
-              <button
-                key={color}
-                onClick={() => setThemeColor(color)}
-                className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${themeColor === color ? 'border-gray-900 scale-110' : 'border-transparent'}`}
-                style={{ backgroundColor: color === '#000000' ? '#111' : color }}
-                title={`Select theme color ${color}`}
-              />
-            ))}
-            {/* UAE Flag mini */}
-            <div className="ml-1 flex h-6 w-10 rounded-full overflow-hidden border border-gray-300" title="UAE Flag Colors">
-              <div className="flex-1" style={{ backgroundColor: '#009639' }} />
-              <div className="flex-1" style={{ backgroundColor: '#ffffff', borderLeft: '1px solid #ddd', borderRight: '1px solid #ddd' }} />
-              <div className="flex-1" style={{ backgroundColor: '#000000' }} />
-              <div className="flex-1" style={{ backgroundColor: '#EF3340' }} />
+      <div className="bg-white p-3.5 sm:p-4 rounded-3xl shadow-sm border border-gray-200/80 flex flex-col gap-3.5">
+        {/* Tier 1: Theme & Identity Customization */}
+        <div className="flex flex-wrap items-center gap-3 justify-between">
+          {/* Theme Palette */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-1.5 p-1 rounded-full bg-gray-50 border border-gray-200/70">
+              {THEMES.map(color => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => setThemeColor(color)}
+                  className={`w-6 h-6 rounded-full border-2 transition-all hover:scale-110 ${
+                    themeColor === color ? 'border-gray-900 scale-110 shadow-xs ring-2 ring-black/10' : 'border-transparent'
+                  }`}
+                  style={{ backgroundColor: color === '#000000' ? '#111' : color }}
+                  title={`Select theme color ${color}`}
+                />
+              ))}
+              {/* UAE Flag mini button */}
+              <div 
+                onClick={() => setThemeColor('#009639')}
+                className="ml-1 flex h-6 w-9 rounded-full overflow-hidden border border-gray-300 cursor-pointer hover:scale-105 transition-transform" 
+                title="UAE Flag Theme"
+              >
+                <div className="flex-1" style={{ backgroundColor: '#009639' }} />
+                <div className="flex-1" style={{ backgroundColor: '#ffffff' }} />
+                <div className="flex-1" style={{ backgroundColor: '#000000' }} />
+                <div className="flex-1" style={{ backgroundColor: '#EF3340' }} />
+              </div>
             </div>
+          </div>
+
+          {/* Photo & Name Input */}
+          <div className="flex items-center gap-2 flex-1 min-w-[240px] justify-end">
+            <label className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200/80 rounded-xl cursor-pointer transition-colors text-xs font-semibold text-gray-700 shrink-0 active:scale-95">
+              <Upload className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Upload Photo</span>
+              <span className="sm:hidden">Photo</span>
+              <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+            </label>
+
+            <input
+              type="text"
+              placeholder="Enter your name..."
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              className="w-full max-w-[220px] bg-gray-50 border border-gray-200/80 rounded-xl py-2 px-3 text-xs outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium placeholder:text-gray-400"
+            />
           </div>
         </div>
 
-        {/* Photo Upload */}
-        <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl cursor-pointer transition-colors text-sm font-semibold text-gray-700">
-            <Upload className="w-4 h-4" />
-            <span>Upload Photo</span>
-            <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
-          </label>
-        </div>
-
-        {/* Name Input */}
-        <div className="flex-1 min-w-[200px]">
-          <input
-            type="text"
-            placeholder="Enter your name..."
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2 px-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
-          />
-        </div>
-
-        {/* Map Label Selector */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1 bg-gray-100/90 p-1 rounded-xl text-xs font-semibold">
-            <span className="px-2 text-gray-500 font-medium hidden sm:inline">Show:</span>
+        {/* Tier 2: Map Labels & Filter */}
+        <div className="pt-2 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2.5">
+          {/* Label selector */}
+          <div className="flex items-center gap-1 bg-gray-100/90 p-1 rounded-xl text-xs font-semibold overflow-x-auto max-w-full">
+            <span className="px-2 text-gray-400 font-medium hidden sm:inline">Show:</span>
             <button
               type="button"
               onClick={() => setLabelMode('regions')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'regions' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
+              className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${labelMode === 'regions' ? 'bg-white text-gray-900 shadow-xs font-bold' : 'text-gray-500 hover:text-gray-800'}`}
             >
               Regions
             </button>
             <button
               type="button"
+              onClick={() => setLabelMode('spots')}
+              className={`px-3 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1.5 ${labelMode === 'spots' ? 'bg-white text-gray-900 shadow-xs font-bold' : 'text-gray-500 hover:text-gray-800'}`}
+            >
+              <span>Tourist Spots</span>
+              {selectedSpots.length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black leading-none">
+                  {selectedSpots.length}
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
               onClick={() => setLabelMode('emirates')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'emirates' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
+              className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${labelMode === 'emirates' ? 'bg-white text-gray-900 shadow-xs font-bold' : 'text-gray-500 hover:text-gray-800'}`}
             >
               Emirates
             </button>
             <button
               type="button"
-              onClick={() => setLabelMode('both')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${labelMode === 'both' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-800'}`}
+              onClick={() => setLabelMode('all')}
+              className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${labelMode === 'all' || labelMode === 'both' ? 'bg-white text-gray-900 shadow-xs font-bold' : 'text-gray-500 hover:text-gray-800'}`}
             >
-              Both
+              All Labels
             </button>
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-xl border border-gray-200 transition-colors">
+          {/* Visibility toggle */}
+          <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/70 transition-colors">
             <input
               type="checkbox"
               checked={onlySelected}
               onChange={e => setOnlySelected(e.target.checked)}
-              className="w-4 h-4 accent-emerald-600 rounded"
+              className="w-3.5 h-3.5 accent-emerald-600 rounded"
             />
-            <span>After Selection Only</span>
+            <span>Show After Selection Only</span>
           </label>
         </div>
       </div>
 
-      <div className="flex justify-center bg-gray-100/50 rounded-3xl p-2 md:p-4 border border-gray-200 border-dashed overflow-hidden">
+      <div className="flex justify-center bg-gradient-to-b from-gray-100/70 to-gray-200/50 rounded-3xl p-2 sm:p-4 border border-gray-200/80 overflow-hidden shadow-inner">
         <div ref={containerRef} className="w-full max-w-[900px] aspect-square relative rounded-[2rem]">
           <div
             ref={cardRef}
@@ -443,7 +476,7 @@ export default function CardGeneratorPanel() {
                 })}
 
                 {/* 2. Emirate Badges (7 main emirates) */}
-                {(labelMode === 'emirates' || labelMode === 'both') && Object.entries(EMIRATE_LABELS).map(([id, label]) => {
+                {(labelMode === 'emirates' || labelMode === 'both' || labelMode === 'all') && Object.entries(EMIRATE_LABELS).map(([id, label]) => {
                   const emirateData = EMIRATES_DATA.find(e => e.id === id);
                   const isSelected = emirateData ? emirateData.regions.some(r => selectedRegions.includes(r.id)) : false;
 
@@ -493,7 +526,7 @@ export default function CardGeneratorPanel() {
                 })}
 
                 {/* 3. Region Markers & Names (All 20 regions - styled like Bangladesh reference map) */}
-                {(labelMode === 'regions' || labelMode === 'both') && REGION_MARKERS.map((r) => {
+                {(labelMode === 'regions' || labelMode === 'both' || labelMode === 'all') && REGION_MARKERS.map((r) => {
                   const isRegionSelected = selectedRegions.includes(r.id);
 
                   // Only show after selection if onlySelected is enabled
@@ -559,6 +592,89 @@ export default function CardGeneratorPanel() {
                     </g>
                   );
                 })}
+
+                {/* 4. Tourist Attraction Markers & Pins (Amber/Gold Landmark Pins) */}
+                {(labelMode === 'spots' || labelMode === 'both' || labelMode === 'all') && TOURIST_SPOTS.map((spot) => {
+                  const isSpotSelected = selectedSpots.includes(spot.id);
+
+                  // Only show after selection if onlySelected is enabled
+                  if (onlySelected && !isSpotSelected) return null;
+
+                  return (
+                    <g
+                      key={`spot-marker-${spot.id}`}
+                      className="cursor-pointer group"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSpot(spot.id, spot.regionId);
+                      }}
+                    >
+                      {/* Selection outer pulse ring */}
+                      {isSpotSelected && (
+                        <circle
+                          cx={spot.x}
+                          cy={spot.y}
+                          r={11}
+                          fill="none"
+                          stroke={spot.highlight ? '#f59e0b' : '#38bdf8'}
+                          strokeWidth={2}
+                          strokeDasharray="3 2"
+                          opacity={0.9}
+                        />
+                      )}
+
+                      {/* Amber / Gold Landmark Badge Pin */}
+                      <circle
+                        cx={spot.x}
+                        cy={spot.y}
+                        r={isSpotSelected ? 6.5 : 4.5}
+                        fill={isSpotSelected ? (spot.highlight ? '#f59e0b' : '#0284c7') : '#94a3b8'}
+                        stroke="#ffffff"
+                        strokeWidth={isSpotSelected ? 2.5 : 1.8}
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25))' }}
+                      />
+
+                      {/* Inner white star dot */}
+                      {isSpotSelected && (
+                        <circle
+                          cx={spot.x}
+                          cy={spot.y}
+                          r={2}
+                          fill="#ffffff"
+                        />
+                      )}
+
+                      {/* Landmark Name Label: Dark halo for high contrast + bright text */}
+                      <text
+                        x={spot.lx}
+                        y={spot.ly}
+                        textAnchor={spot.anchor}
+                        dominantBaseline="middle"
+                        fontSize={isSpotSelected ? 12 : 10}
+                        fontWeight={isSpotSelected ? '900' : '700'}
+                        fill="none"
+                        stroke="#0a2540"
+                        strokeWidth={3.5}
+                        strokeLinejoin="round"
+                        style={{ userSelect: 'none' }}
+                      >
+                        ★ {spot.name}
+                      </text>
+                      <text
+                        x={spot.lx}
+                        y={spot.ly}
+                        textAnchor={spot.anchor}
+                        dominantBaseline="middle"
+                        fontSize={isSpotSelected ? 12 : 10}
+                        fontWeight={isSpotSelected ? '900' : '700'}
+                        fill={isSpotSelected ? (spot.highlight ? '#fef08a' : '#ffffff') : '#cbd5e1'}
+                        style={{ userSelect: 'none' }}
+                      >
+                        ★ {spot.name}
+                      </text>
+                    </g>
+                  );
+                })}
               </svg>
             </div>
 
@@ -577,8 +693,8 @@ export default function CardGeneratorPanel() {
                   <p className="font-black text-gray-800" style={{ fontSize: '38px' }}>
                     {percentage}% UAE Explored
                   </p>
-                  <p className="text-gray-500 font-medium" style={{ fontSize: '26px' }}>
-                    {selectedEmiratesCount} Emirates &middot; {selectedRegions.length} Regions visited
+                  <p className="text-gray-500 font-medium" style={{ fontSize: '24px' }}>
+                    {selectedEmiratesCount} Emirates &middot; {selectedRegions.length} Regions{selectedSpots.length > 0 ? ` · ${selectedSpots.length} Tourist Places` : ''} visited
                   </p>
                   <p className="font-bold mt-1" style={{ fontSize: '22px', color: themeColor }}>
                     Keep exploring the UAE with {userName || 'me'} 🇦🇪
@@ -599,52 +715,50 @@ export default function CardGeneratorPanel() {
                   </div>
                 </div>
               </div>
-
-              {/* Tip */}
-              <p className="text-gray-400 text-center font-medium border-t border-gray-200/70 pt-3" style={{ fontSize: '20px' }}>
-                💡 Click an emirate on the map to mark it as visited
-              </p>
             </div>
           </div>
         </div>
       </div>
 
+      {/* UI Tip (Only visible on web, not included in exported/shared image) */}
+      <p className="text-xs text-gray-400 text-center font-medium -mt-2">
+        💡 Tip: Click an emirate or tourist spot on the map to mark it as visited
+      </p>
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap justify-center gap-3">
+      {/* Action Buttons (Responsive on Mobile & Desktop - Identically Sized) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl mx-auto">
         <motion.button
-          whileHover={{ scale: isDownloading ? 1 : 1.05 }}
-          whileTap={{ scale: isDownloading ? 1 : 0.95 }}
+          whileHover={{ scale: isDownloading ? 1 : 1.02 }}
+          whileTap={{ scale: isDownloading ? 1 : 0.98 }}
           onClick={() => handleDownload('png')}
           disabled={isDownloading || isGeneratingShare}
-          className="flex items-center gap-2 px-6 py-3.5 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          className="h-12 w-full flex items-center justify-center gap-2 px-4 text-white rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap border border-transparent active:scale-95"
           style={{ backgroundColor: themeColor }}
         >
-          <Download className={`w-5 h-5 ${isDownloading ? 'animate-bounce' : ''}`} />
-          {isDownloading ? 'Generating...' : 'Download PNG'}
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: isDownloading ? 1 : 1.05 }}
-          whileTap={{ scale: isDownloading ? 1 : 0.95 }}
-          onClick={() => handleDownload('jpg')}
-          disabled={isDownloading || isGeneratingShare}
-          className="flex items-center gap-2 px-6 py-3.5 bg-white text-gray-900 border border-gray-200 rounded-2xl font-bold hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          <Download className="w-5 h-5" />
-          {isDownloading ? 'Generating...' : 'Download JPG'}
+          <Download className={`w-4 h-4 shrink-0 ${isDownloading ? 'animate-bounce' : ''}`} />
+          <span>{isDownloading ? 'Exporting...' : 'Download PNG'}</span>
         </motion.button>
 
-        {/* Share Button */}
         <motion.button
-          whileHover={{ scale: isGeneratingShare ? 1 : 1.05 }}
-          whileTap={{ scale: isGeneratingShare ? 1 : 0.95 }}
+          whileHover={{ scale: isDownloading ? 1 : 1.02 }}
+          whileTap={{ scale: isDownloading ? 1 : 0.98 }}
+          onClick={() => handleDownload('jpg')}
+          disabled={isDownloading || isGeneratingShare}
+          className="h-12 w-full flex items-center justify-center gap-2 px-4 bg-white text-gray-800 border border-gray-200/90 rounded-2xl text-xs sm:text-sm font-bold hover:bg-gray-50 transition-colors shadow-xs disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap active:scale-95"
+        >
+          <Download className="w-4 h-4 shrink-0 text-gray-500" />
+          <span>Download JPG</span>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: isGeneratingShare ? 1 : 1.02 }}
+          whileTap={{ scale: isGeneratingShare ? 1 : 0.98 }}
           onClick={handleOpenShare}
           disabled={isDownloading || isGeneratingShare}
-          className="flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed text-white"
-          style={{ background: 'linear-gradient(135deg, #009639, #00b347)' }}
+          className="h-12 w-full flex items-center justify-center gap-2 px-4 rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed text-white bg-gradient-to-tr from-emerald-600 to-teal-600 whitespace-nowrap border border-transparent active:scale-95"
         >
-          <Share2 className={`w-5 h-5 ${isGeneratingShare ? 'animate-spin' : ''}`} />
-          {isGeneratingShare ? 'Preparing...' : 'Share'}
+          <Share2 className={`w-4 h-4 shrink-0 ${isGeneratingShare ? 'animate-spin' : ''}`} />
+          <span>{isGeneratingShare ? 'Preparing...' : 'Share Card'}</span>
         </motion.button>
       </div>
 
