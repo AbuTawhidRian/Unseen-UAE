@@ -15,7 +15,7 @@ interface MapState {
 
 export const useMapStore = create<MapState>((set) => ({
   selectedRegions: [],
-  themeColor: '#10b981', // emerald-500
+  themeColor: '#009639', // UAE Green
   userName: '',
   userPhoto: null,
   

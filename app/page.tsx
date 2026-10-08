@@ -91,7 +91,7 @@ export default function Home() {
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.6 }}
-          className="w-full lg:w-1/3 shrink-0 lg:sticky lg:top-24 max-h-[calc(100vh-8rem)] overflow-y-auto hidden-scrollbar"
+          className="w-full lg:w-1/4 shrink-0 lg:sticky lg:top-24 max-h-[calc(100vh-8rem)] overflow-y-auto hidden-scrollbar"
         >
           <RegionSelectorPanel />
         </motion.div>
@@ -101,7 +101,7 @@ export default function Home() {
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.7 }}
-          className="w-full lg:w-2/3"
+          className="w-full lg:w-3/4"
         >
           <CardGeneratorPanel />
         </motion.div>
