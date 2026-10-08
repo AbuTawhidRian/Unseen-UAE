@@ -72,7 +72,7 @@ export const EMIRATES_DATA = [
 const TOTAL_REGIONS = EMIRATES_DATA.reduce((acc, emirate) => acc + emirate.regions.length, 0);
 const ALL_REGION_IDS = EMIRATES_DATA.flatMap(e => e.regions.map(r => r.id));
 const ALL_SPOT_IDS = TOURIST_SPOTS.map(s => s.id);
-const SPOT_CATEGORIES = ['All', 'Landmark', 'Culture', 'Nature', 'Adventure', 'Beach'] as const;
+const SPOT_CATEGORIES = ['All', 'Landmark', 'Culture', 'Nature', 'Adventure', 'Beach', 'Theme Park'] as const;
 
 export default function RegionSelectorPanel() {
   const { 
@@ -197,23 +197,37 @@ export default function RegionSelectorPanel() {
           )}
         </div>
 
-        {/* Category Filters (Only for Tourist Spots) */}
+        {/* Category Filters (Only for Tourist Spots - Responsive wrapping so all chips are visible) */}
         {activeTab === 'spots' && (
-          <div className="flex gap-1.5 overflow-x-auto pb-1 hidden-scrollbar text-[11px] font-semibold">
-            {SPOT_CATEGORIES.map(category => (
-              <button
-                key={category}
-                type="button"
-                onClick={() => setSelectedCategory(category)}
-                className={`px-2.5 py-1 rounded-lg shrink-0 transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-1.5 pt-0.5 text-[11px] font-semibold">
+            {SPOT_CATEGORIES.map(category => {
+              const isSelected = selectedCategory === category;
+              const count = category === 'All' 
+                ? TOURIST_SPOTS.length 
+                : TOURIST_SPOTS.filter(s => s.category === category).length;
+
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => setSelectedCategory(category)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all active:scale-95 border",
+                    isSelected
+                      ? "bg-gray-900 text-white border-gray-900 shadow-xs font-bold"
+                      : "bg-gray-50 text-gray-600 border-gray-200/80 hover:bg-gray-100 hover:text-gray-900 hover:border-gray-300"
+                  )}
+                >
+                  <span>{category}</span>
+                  <span className={cn(
+                    "text-[10px] px-1 py-0.2 rounded-md font-bold",
+                    isSelected ? "bg-white/20 text-white" : "text-gray-400 bg-gray-200/60"
+                  )}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
 
