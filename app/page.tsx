@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import RegionSelectorPanel, { EMIRATES_DATA } from '@/components/map/RegionSelectorPanel';
 import CardGeneratorPanel from '@/components/map/CardGeneratorPanel';
+import UaeHeroAnimations from '@/components/landing/UaeHeroAnimations';
 import { Compass, Sparkles, MapPin, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -66,21 +67,27 @@ export default function Home() {
         </div>
       </motion.header>
 
-      {/* Hero Section (Minimalist & Editorial) */}
-      <section className="relative w-full pt-12 pb-14 md:pt-16 md:pb-20 overflow-hidden bg-gradient-to-b from-white via-[#f7f9fa] to-[#fafbfc] border-b border-gray-100">
-        {/* Soft background ambient gradient accents */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[360px] bg-gradient-to-b from-emerald-50/50 via-teal-50/30 to-transparent blur-3xl pointer-events-none -z-10" />
+      {/* Hero Section (Minimalist & Living UAE Atmosphere) */}
+      <section className="relative w-full pt-14 pb-16 md:pt-20 md:pb-24 overflow-hidden bg-gradient-to-b from-white via-[#f7f9fa] to-[#fafbfc] border-b border-gray-100">
+        {/* Living UAE Animations: Soaring Falcon, Floating Landmark Badges, Golden Sparkles & Horizon Skyline */}
+        <UaeHeroAnimations />
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center">
-          {/* Tag */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center relative z-10">
+          {/* Tag with subtle animated flag accent */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100/90 text-emerald-700 text-xs font-bold tracking-wide uppercase mb-5"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50/90 border border-emerald-200/80 text-emerald-800 text-xs font-bold tracking-wide uppercase mb-5 shadow-xs backdrop-blur-xs"
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Interactive UAE Travel Map & Card</span>
+            <motion.span
+              animate={{ rotate: [0, 12, -12, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+            >
+              🇦🇪
+            </motion.span>
+            <span>Interactive UAE Travel Map & Explorer Card</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           </motion.div>
 
           {/* Headline */}
@@ -88,9 +95,13 @@ export default function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-[1.15] mb-4"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight leading-[1.12] mb-4"
           >
-            How much of the UAE have you explored?
+            How much of the{' '}
+            <span className="bg-gradient-to-r from-emerald-700 via-teal-600 to-emerald-600 bg-clip-text text-transparent">
+              UAE
+            </span>{' '}
+            have you explored?
           </motion.h1>
 
           {/* Subtitle */}
@@ -98,9 +109,9 @@ export default function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-gray-500 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-6 font-normal"
+            className="text-gray-500 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-7 font-normal"
           >
-            From the silent dunes of Al Dhafra to the dramatic ridges of Jebel Jais. Check off every region you’ve visited and export your personalized explorer card.
+            From the silent red dunes of Al Dhafra to the dramatic peaks of Jebel Jais. Mark every region and iconic tourist place you’ve visited and export your personalized high-res card.
           </motion.p>
 
           {/* Stats Bar */}
@@ -108,7 +119,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex items-center justify-center flex-wrap gap-4 sm:gap-8 text-xs font-semibold text-gray-600"
+            className="flex items-center justify-center flex-wrap gap-4 sm:gap-8 text-xs font-semibold text-gray-600 bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-gray-200/70 shadow-xs"
           >
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-gray-900">7</span> Emirates
