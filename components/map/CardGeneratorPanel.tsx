@@ -300,12 +300,27 @@ export default function CardGeneratorPanel() {
 
           {/* Photo & Name Input */}
           <div className="flex items-center gap-2 flex-1 min-w-[240px] justify-end">
-            <label className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200/80 rounded-xl cursor-pointer transition-colors text-xs font-semibold text-gray-700 shrink-0 active:scale-95">
-              <Upload className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Upload Photo</span>
-              <span className="sm:hidden">Photo</span>
-              <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
-            </label>
+            {userPhoto ? (
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 border border-emerald-200/90 rounded-xl text-xs font-semibold text-emerald-800 shrink-0 shadow-xs">
+                <img src={userPhoto} alt="Thumbnail" className="w-5 h-5 rounded-md object-cover border border-emerald-300" />
+                <span className="hidden sm:inline">Photo Added</span>
+                <button
+                  type="button"
+                  onClick={() => setUserPhoto(null)}
+                  className="p-1 hover:bg-emerald-200/70 rounded-md text-emerald-700 transition-colors ml-0.5"
+                  title="Remove photo frame"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <label className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200/80 rounded-xl cursor-pointer transition-colors text-xs font-semibold text-gray-700 shrink-0 active:scale-95">
+                <Upload className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Upload Photo</span>
+                <span className="sm:hidden">Photo</span>
+                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+              </label>
+            )}
 
             <input
               type="text"
@@ -393,22 +408,15 @@ export default function CardGeneratorPanel() {
             {/* Card Header */}
             <div className="px-14 pt-10 pb-4 flex items-center justify-between relative z-10 pointer-events-none">
               <div className="flex items-center gap-7">
-                {/* Profile Photo */}
-                <div
-                  className="w-28 h-28 rounded-2xl overflow-hidden bg-white shrink-0 shadow-lg"
-                  style={{ border: `4px solid ${themeColor}` }}
-                >
-                  {userPhoto ? (
+                {/* Profile Photo (Only added if user uploaded a photo) */}
+                {userPhoto && (
+                  <div
+                    className="w-28 h-28 rounded-2xl overflow-hidden bg-white shrink-0 shadow-lg"
+                    style={{ border: `4px solid ${themeColor}` }}
+                  >
                     <img src={userPhoto} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <div
-                      className="w-full h-full flex items-center justify-center text-4xl font-black"
-                      style={{ color: themeColor }}
-                    >
-                      {userName ? userName.charAt(0).toUpperCase() : '?'}
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
                 <div>
                   <p className="text-gray-500 font-semibold uppercase tracking-widest mb-1" style={{ fontSize: '26px' }}>
                     UAE Travel Map
@@ -696,22 +704,74 @@ export default function CardGeneratorPanel() {
                   <p className="text-gray-500 font-medium" style={{ fontSize: '24px' }}>
                     {selectedEmiratesCount} Emirates &middot; {selectedRegions.length} Regions{selectedSpots.length > 0 ? ` · ${selectedSpots.length} Tourist Places` : ''} visited
                   </p>
-                  <p className="font-bold mt-1" style={{ fontSize: '22px', color: themeColor }}>
-                    Keep exploring the UAE with {userName || 'me'} 🇦🇪
+                  <p className="font-bold mt-1.5 flex items-center gap-2" style={{ fontSize: '22px', color: themeColor }}>
+                    <span>
+                      {userName ? `Explored by ${userName}` : 'Discover the Unseen UAE across all 7 Emirates'}
+                    </span>
+                    <span className="inline-flex h-3.5 w-5.5 rounded-xs overflow-hidden shrink-0 border border-black/15 shadow-2xs">
+                      <span className="w-1.5 bg-[#EF3340] h-full" />
+                      <span className="flex-1 flex flex-col h-full">
+                        <span className="flex-1 bg-[#009639]" />
+                        <span className="flex-1 bg-white" />
+                        <span className="flex-1 bg-black" />
+                      </span>
+                    </span>
                   </p>
                 </div>
 
-                {/* Branding */}
-                <div className="flex items-center gap-4 bg-white/70 px-7 py-4 rounded-2xl border border-gray-200 shadow-sm">
-                  <div className="flex w-10 h-7 rounded-md overflow-hidden border border-gray-200">
-                    <div className="flex-1" style={{ backgroundColor: '#009639' }} />
-                    <div className="flex-1" style={{ backgroundColor: '#ffffff' }} />
-                    <div className="flex-1" style={{ backgroundColor: '#000000' }} />
-                    <div className="flex-1" style={{ backgroundColor: '#EF3340' }} />
+                {/* Luxury Brand Emblem on Explorer Card */}
+                <div className="flex items-center gap-3.5 bg-white/95 backdrop-blur-sm px-5 py-3 rounded-2xl border border-gray-200/90 shadow-sm">
+                  {/* Official UAE Flag Emblem */}
+                  <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-xs border border-black/10 bg-white">
+                    <svg viewBox="0 0 48 48" className="w-full h-full" fill="none">
+                      <clipPath id="card-flag-shape">
+                        <rect x="0" y="0" width="48" height="48" rx="10" />
+                      </clipPath>
+                      <g clipPath="url(#card-flag-shape)">
+                        <rect x="13" y="0" width="35" height="16" fill="#009639" />
+                        <rect x="13" y="16" width="35" height="16" fill="#FFFFFF" stroke="rgba(0,0,0,0.04)" strokeWidth="0.8" />
+                        <rect x="13" y="32" width="35" height="16" fill="#0F172A" />
+                        <rect x="0" y="0" width="13" height="48" fill="#EF3340" />
+                        <polygon points="0,0 24,0 8,48 0,48" fill="rgba(255,255,255,0.12)" />
+                        {/* 7-Pointed Golden Federation Star */}
+                        <circle cx="24" cy="24" r="14.5" stroke="#FFFFFF" strokeWidth="1.2" strokeDasharray="2 2" opacity="0.85" />
+                        <polygon
+                          points="24,12 26.26,19.32 33.38,16.52 29.07,22.84 35.7,26.67 28.07,27.24 29.21,34.81 24,29.2 18.79,34.81 19.93,27.24 12.3,26.67 18.93,22.84 14.62,16.52 21.74,19.32"
+                          fill="url(#gold-star-card)"
+                          stroke="#FFFFFF"
+                          strokeWidth="0.7"
+                        />
+                        <circle cx="24" cy="24" r="3.6" fill="#009639" stroke="#FDE68A" strokeWidth="0.8" />
+                        <circle cx="24" cy="24" r="1.4" fill="#FFFFFF" />
+                      </g>
+                      <defs>
+                        <linearGradient id="gold-star-card" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor="#FFF5A0" />
+                          <stop offset="45%" stopColor="#F59E0B" />
+                          <stop offset="100%" stopColor="#C26A00" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
                   </div>
-                  <div>
-                    <p className="font-black text-gray-800" style={{ fontSize: '24px', lineHeight: 1.1 }}>Unseen UAE</p>
-                    <p className="text-gray-400 font-medium" style={{ fontSize: '18px' }}>unseenuae.com</p>
+
+                  {/* Perfectly Aligned Typography */}
+                  <div className="flex flex-col items-start justify-center text-left leading-none">
+                    <div className="flex items-center gap-1.5 leading-none">
+                      <span className="font-black text-gray-900 tracking-tight" style={{ fontSize: '24px', lineHeight: 1 }}>
+                        Unseen UAE
+                      </span>
+                      <span className="inline-flex h-3.5 w-5 rounded-xs overflow-hidden shrink-0 border border-black/15 shadow-2xs" title="United Arab Emirates">
+                        <span className="w-1.5 bg-[#EF3340] h-full" />
+                        <span className="flex-1 flex flex-col h-full">
+                          <span className="flex-1 bg-[#009639]" />
+                          <span className="flex-1 bg-white" />
+                          <span className="flex-1 bg-black" />
+                        </span>
+                      </span>
+                    </div>
+                    <span className="font-semibold text-gray-400 tracking-wide mt-1.5" style={{ fontSize: '15px', lineHeight: 1 }}>
+                      unseenuae.com
+                    </span>
                   </div>
                 </div>
               </div>

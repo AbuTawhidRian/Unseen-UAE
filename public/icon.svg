@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <clipPath id="fav-clip">
+      <rect x="0" y="0" width="32" height="32" rx="7" />
+    </clipPath>
+  </defs>
+
+  <!-- Base Squircle with UAE Flag -->
+  <g clipPath="url(#fav-clip)">
+    <!-- Top Green Stripe -->
+    <rect x="9" y="0" width="23" height="11" fill="#009639" />
+
+    <!-- Center White Stripe -->
+    <rect x="9" y="11" width="23" height="10" fill="#FFFFFF" />
+
+    <!-- Bottom Black Stripe -->
+    <rect x="9" y="21" width="23" height="11" fill="#0F172A" />
+
+    <!-- Left Red Hoist Pillar -->
+    <rect x="0" y="0" width="9" height="32" fill="#EF3340" />
+
+    <!-- Star Drop Shadow for High Contrast on White Stripe -->
+    <circle cx="17.5" cy="16" r="7.5" fill="#000000" opacity="0.3" />
+
+    <!-- Outer Golden Star (Bold, high-contrast, crystal clear) -->
+    <polygon
+      points="17.5,8 19,13 24,11 21,15.5 25.5,18 20.5,18.5 21.5,23.5 17.5,19.5 13.5,23.5 14.5,18.5 9.5,18 14,15.5 11,11 16,13"
+      fill="#F59E0B"
+      stroke="#FEF08A"
+      stroke-width="0.8"
+    />
+
+    <!-- Inner Emerald Core with White Focal Point -->
+    <circle cx="17.5" cy="16" r="3.2" fill="#009639" stroke="#FFFFFF" stroke-width="0.8" />
+    <circle cx="17.5" cy="16" r="1.2" fill="#FFFFFF" />
+  </g>
+
+  <!-- Crisp 1px Outer Border for Dark & Light browser tabs -->
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" stroke="rgba(0,0,0,0.25)" stroke-width="1" />
+</svg>

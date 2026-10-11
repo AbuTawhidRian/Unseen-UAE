@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import RegionSelectorPanel, { EMIRATES_DATA } from '@/components/map/RegionSelectorPanel';
 import CardGeneratorPanel from '@/components/map/CardGeneratorPanel';
 import UaeHeroAnimations from '@/components/landing/UaeHeroAnimations';
+import Logo from '@/components/ui/Logo';
 import { Compass, Sparkles, MapPin, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -28,19 +29,9 @@ export default function Home() {
         className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-black/[0.05] transition-all"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 h-16 flex items-center justify-between">
-          {/* Logo & Emblem */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-sm shadow-emerald-600/20 group-hover:scale-105 transition-transform">
-              <Compass className="w-5 h-5" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-base tracking-tight text-gray-900">Unseen UAE</span>
-                <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100/80">
-                  🇦🇪 Map
-                </span>
-              </div>
-            </div>
+          {/* Upgraded Luxury Brand Logo */}
+          <Link href="/" className="transition-transform hover:opacity-95">
+            <Logo size="md" />
           </Link>
 
           {/* Navigation Links (Desktop) */}
@@ -80,12 +71,18 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50/90 border border-emerald-200/80 text-emerald-800 text-xs font-bold tracking-wide uppercase mb-5 shadow-xs backdrop-blur-xs"
           >
-            <motion.span
-              animate={{ rotate: [0, 12, -12, 0] }}
+            <motion.div
+              animate={{ rotate: [0, 8, -8, 0] }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="flex h-3 w-4.5 rounded-xs overflow-hidden shrink-0 border border-black/15 shadow-2xs"
             >
-              🇦🇪
-            </motion.span>
+              <div className="w-1.2 bg-[#EF3340] h-full" />
+              <div className="flex-1 flex flex-col h-full">
+                <div className="flex-1 bg-[#009639]" />
+                <div className="flex-1 bg-white" />
+                <div className="flex-1 bg-black" />
+              </div>
+            </motion.div>
             <span>Interactive UAE Travel Map & Explorer Card</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           </motion.div>
@@ -203,11 +200,10 @@ export default function Home() {
       {/* Minimalist Footer */}
       <footer className="mt-20 border-t border-gray-200/60 bg-white/60 py-10 px-4 sm:px-6 md:px-10">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-medium text-gray-500">
-          <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-emerald-600" />
-            <span className="font-bold text-gray-800">Unseen UAE</span>
-            <span>&middot;</span>
-            <span>Discover every corner of the Emirates</span>
+          <div className="flex items-center gap-3">
+            <Logo size="sm" showSubtitle={false} />
+            <span className="text-gray-300">&middot;</span>
+            <span className="text-gray-500 font-medium">Discover every corner of the Emirates</span>
           </div>
           <p>© 2026 Unseen UAE. Free & Open Explorer Card.</p>
         </div>

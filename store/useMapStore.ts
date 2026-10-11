@@ -14,7 +14,7 @@ interface MapState {
   setLabelMode: (mode: LabelMode) => void;
   setThemeColor: (color: string) => void;
   setUserName: (name: string) => void;
-  setUserPhoto: (photoUrl: string) => void;
+  setUserPhoto: (photoUrl: string | null) => void;
   clearAll: () => void;
   selectAll: (regionIds: string[]) => void;
   selectAllSpots: (spotIds: string[], autoSelectRegions?: string[]) => void;
